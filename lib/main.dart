@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:gerenciamento_veiculos/Screen/Login-Cadastro/login.dart';
-import 'package:gerenciamento_veiculos/Screen/home.dart';
+import 'package:gerenciamento_veiculos/Screen/app/veiculoScreen/home.dart';
 import 'firebase_options.dart';
 
 void main() async {

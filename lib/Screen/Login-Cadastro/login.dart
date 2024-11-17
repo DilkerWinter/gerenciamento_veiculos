@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gerenciamento_veiculos/Screen/Login-Cadastro/alterarSenha.dart';
 import 'package:gerenciamento_veiculos/Screen/Login-Cadastro/cadastro.dart';
-import 'package:gerenciamento_veiculos/Screen/home.dart';
+import 'package:gerenciamento_veiculos/Screen/app/veiculoScreen/home.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
