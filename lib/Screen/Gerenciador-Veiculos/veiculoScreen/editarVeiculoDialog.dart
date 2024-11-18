@@ -39,21 +39,20 @@ void showEditDialog(BuildContext context, Veiculo veiculo, Function(Veiculo) onS
         actions: [
           TextButton(
             onPressed: () {
-              onDelete(veiculo); // Deletar o veículo
-              Navigator.of(context).pop(); // Fechar o diálogo
+              onDelete(veiculo); 
+              Navigator.of(context).pop();
             },
             child: Text('Deletar', style: TextStyle(color: Colors.red)),
           ),
           TextButton(
             onPressed: () {
-              // Atualizar o veículo com os valores editados
               veiculo.nome = nomeController.text;
               veiculo.marca = marcaController.text;
               veiculo.ano = anoController.text;
               veiculo.placa = placaController.text;
 
-              onSave(veiculo); // Salvar as alterações
-              Navigator.of(context).pop(); // Fechar o diálogo
+              onSave(veiculo); 
+              Navigator.of(context).pop(); 
             },
             child: Text('Salvar'),
           ),

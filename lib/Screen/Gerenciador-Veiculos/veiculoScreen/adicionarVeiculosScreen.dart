@@ -13,6 +13,7 @@ class _AdicionarVeiculosScreenState extends State<AdicionarVeiculosScreen> {
   final TextEditingController _marcaController = TextEditingController();
   final TextEditingController _anoController = TextEditingController();
   final TextEditingController _placaController = TextEditingController();
+  final TextEditingController _kmController = TextEditingController(); 
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -25,6 +26,7 @@ class _AdicionarVeiculosScreenState extends State<AdicionarVeiculosScreen> {
         _marcaController.text,
         _anoController.text,
         _placaController.text,
+        int.tryParse(_kmController.text) ?? 0, 
       );
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -38,6 +40,7 @@ class _AdicionarVeiculosScreenState extends State<AdicionarVeiculosScreen> {
         _marcaController.clear();
         _anoController.clear();
         _placaController.clear();
+        _kmController.clear(); 
       }
     }
   }
@@ -117,6 +120,24 @@ class _AdicionarVeiculosScreenState extends State<AdicionarVeiculosScreen> {
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Por favor, insira a placa do veículo.';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+
+              TextFormField(
+                controller: _kmController,
+                decoration: const InputDecoration(
+                  labelText: 'Km Atual do Veículo',
+                  border: OutlineInputBorder(),
+                ),
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Por favor, insira o km atual do veículo.';
+                  } else if (int.tryParse(value) == null) {
+                    return 'Por favor, insira um valor de km válido.';
                   }
                   return null;
                 },

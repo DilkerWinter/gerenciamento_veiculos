@@ -4,7 +4,7 @@ import 'package:gerenciamento_veiculos/Model/Veiculo.dart';
 
 class VeiculoController {
   Future<bool> adicionarVeiculo(
-      String nome, String marca, String ano, String placa) async {
+      String nome, String marca, String ano, String placa,int kmAtual) async {
     User? usuario = FirebaseAuth.instance.currentUser;
 
     if (usuario != null) {
@@ -16,6 +16,7 @@ class VeiculoController {
           ano: ano,
           placa: placa,
           usuarioId: usuario.uid,
+          kmAtual: kmAtual,
         );
 
         await FirebaseFirestore.instance
@@ -55,7 +56,7 @@ class VeiculoController {
   }
 
  Future<bool> editarVeiculo(
-      String id, String nome, String marca, String ano, String placa) async {
+      String id, String nome, String marca, String ano, String placa, ) async {
     User? usuario = FirebaseAuth.instance.currentUser;
 
     if (usuario != null) {

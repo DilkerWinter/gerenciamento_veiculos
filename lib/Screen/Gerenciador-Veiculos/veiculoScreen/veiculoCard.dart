@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:gerenciamento_veiculos/Model/Veiculo.dart'; // Importe seu modelo de Veiculo
+import 'package:gerenciamento_veiculos/Model/Veiculo.dart'; 
 
 class VeiculoCard extends StatelessWidget {
   final Veiculo veiculo;
-  final VoidCallback onEdit; 
+  final VoidCallback onEdit;
 
   const VeiculoCard({super.key, required this.veiculo, required this.onEdit});
 
@@ -32,6 +32,14 @@ class VeiculoCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
+                  'Média de Consumo: ${veiculo.mediaConsumo != null ? veiculo.mediaConsumo!.toStringAsFixed(2) : "Indisponível"}',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.black,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
                   'Marca: ${veiculo.marca}',
                   style: TextStyle(
                     fontSize: 16,
@@ -54,6 +62,15 @@ class VeiculoCard extends StatelessWidget {
                     color: Colors.grey[700],
                   ),
                 ),
+                const SizedBox(height: 4),
+                Text(
+                  'KM Atual: ${veiculo.kmAtual}', 
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey[700],
+                  ),
+                ),
+                
               ],
             ),
           ),
@@ -62,7 +79,7 @@ class VeiculoCard extends StatelessWidget {
             right: 0,
             child: IconButton(
               icon: Icon(Icons.edit, color: Colors.black),
-              onPressed: onEdit, // Chama a função de edição quando pressionado
+              onPressed: onEdit,
             ),
           ),
         ],
