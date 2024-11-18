@@ -1,10 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:gerenciamento_veiculos/Screen/Login-Cadastro/login.dart';
 import 'package:gerenciamento_veiculos/Screen/Gerenciador-Veiculos/abastecimentoScreen/abastecimentoScreen.dart';
 import 'package:gerenciamento_veiculos/Screen/Gerenciador-Veiculos/userScreen/usuarioConfigScreen.dart';
 import 'package:gerenciamento_veiculos/Screen/Gerenciador-Veiculos/veiculoScreen/adicionarVeiculosScreen.dart';
 import 'package:gerenciamento_veiculos/Screen/Gerenciador-Veiculos/veiculoScreen/listaVeiculosScreen.dart';
+import 'package:gerenciamento_veiculos/Screen/Login-Cadastro/login.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -21,7 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
       case 0:
         return const Listaveiculos();
       case 1:
-        return const AdcionarVeiculosScreen();
+        return const AdicionarVeiculosScreen();
       case 2:
         return const AbastecimentoScreen();
       case 3: 
@@ -32,9 +32,13 @@ class _HomeScreenState extends State<HomeScreen> {
         });
         return const Listaveiculos();
       default:
-        return const Listaveiculos();
-    }
+        return Scaffold(
+        body: Center(
+          child: Text('Erro desconhecido!', style: TextStyle(fontSize: 24, color: Colors.red)),
+        ),
+      );
   }
+}
 
   Future<void> _confirmarDeslogar(BuildContext context) async{
     bool? confirmarDeslogar = await showDialog<bool>(context: context,
@@ -121,6 +125,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ListTile(
               leading: Icon(Icons.add),
               title: Text('Adicionar Veículo'),
+              
               onTap: () {
                 setState(() {
                   _selectedIndex = 1;
@@ -145,6 +150,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 setState(() {
                   _selectedIndex = 3;
                 });
+                Navigator.pop(context);
               },
             ),
             ListTile(
@@ -159,7 +165,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
-      body: _getBodyContent(_selectedIndex), // Exibe o conteúdo com base na seleção
+      body: _getBodyContent(_selectedIndex), 
     );
   }
 }
