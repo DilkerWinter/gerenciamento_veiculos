@@ -10,6 +10,7 @@ class VeiculoController {
     if (usuario != null) {
       try {
         Veiculo veiculo = Veiculo(
+          id: '',
           nome: nome,
           marca: marca,
           ano: ano,
@@ -41,7 +42,7 @@ class VeiculoController {
             .where('usuarioId', isEqualTo: usuario.uid)
             .get();
         List<Veiculo> veiculos = querySnapshot.docs.map((doc) {
-          return Veiculo.fromMap(doc.data() as Map<String, dynamic>);
+          return Veiculo.fromMap(doc.data() as Map<String, dynamic>, doc.id);
         }).toList();
         return veiculos;
       } catch (error) {
@@ -50,6 +51,52 @@ class VeiculoController {
       }
     } else {
       return [];
+    }
+  }
+
+ Future<bool> editarVeiculo(
+      String id, String nome, String marca, String ano, String placa) async {
+    User? usuario = FirebaseAuth.instance.currentUser;
+
+    if (usuario != null) {
+      try {
+        await FirebaseFirestore.instance
+            .collection('veiculos')
+            .doc(id) 
+            .update({
+          'nome': nome,
+          'marca': marca,
+          'ano': ano,
+          'placa': placa,
+        });
+
+        return true;
+      } catch (error) {
+        print("Erro ao editar veículo: $error");
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+
+   Future<bool> deletarVeiculo(String id) async {
+    User? usuario = FirebaseAuth.instance.currentUser;
+
+    if (usuario != null) {
+      try {
+        await FirebaseFirestore.instance
+            .collection('veiculos')
+            .doc(id) 
+            .delete();
+
+        return true;
+      } catch (error) {
+        print("Erro ao deletar veículo: $error");
+        return false;
+      }
+    } else {
+      return false;
     }
   }
 }

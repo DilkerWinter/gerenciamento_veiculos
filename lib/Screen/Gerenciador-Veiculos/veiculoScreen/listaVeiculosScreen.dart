@@ -1,15 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:gerenciamento_veiculos/Model/Veiculo.dart';
+import 'package:gerenciamento_veiculos/Screen/Gerenciador-Veiculos/veiculoScreen/editarVeiculoDialog.dart';
 import 'package:gerenciamento_veiculos/Screen/Gerenciador-Veiculos/veiculoScreen/veiculoCard.dart';
 import 'package:gerenciamento_veiculos/controller/VeiculoController.dart';
 
-class Listaveiculos extends StatelessWidget {
+class Listaveiculos extends StatefulWidget {
   const Listaveiculos({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    VeiculoController veiculoController = VeiculoController();
+  _ListaveiculosState createState() => _ListaveiculosState();
+}
 
+class _ListaveiculosState extends State<Listaveiculos> {
+  late VeiculoController veiculoController;
+  late Future<List<Veiculo>> veiculosFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    veiculoController = VeiculoController();
+    veiculosFuture = veiculoController.buscarVeiculosUsuario();
+  }
+
+  void atualizarVeiculos() {
+    setState(() {
+      veiculosFuture = veiculoController.buscarVeiculosUsuario();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -25,7 +45,7 @@ class Listaveiculos extends StatelessWidget {
             const SizedBox(height: 20),
             Expanded(
               child: FutureBuilder<List<Veiculo>>(
-                future: veiculoController.buscarVeiculosUsuario(),
+                future: veiculosFuture,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
@@ -44,7 +64,31 @@ class Listaveiculos extends StatelessWidget {
                   return ListView.builder(
                     itemCount: veiculos.length,
                     itemBuilder: (context, index) {
-                      return VeiculoCard(veiculo: veiculos[index]);
+                      return VeiculoCard(
+                        veiculo: veiculos[index],
+                        onEdit: () {
+                          showEditDialog(
+                            context,
+                            veiculos[index],
+                            (editedVeiculo) {
+                              veiculoController.editarVeiculo(
+                                veiculos[index].id, 
+                                editedVeiculo.nome,
+                                editedVeiculo.marca,
+                                editedVeiculo.ano,
+                                editedVeiculo.placa,
+                              ).then((_) {
+                                atualizarVeiculos();
+                              });
+                            },
+                            (deletedVeiculo) {
+                              veiculoController.deletarVeiculo(deletedVeiculo.id).then((_) {
+                                atualizarVeiculos();
+                              });
+                            },
+                          );
+                        },
+                      );
                     },
                   );
                 },

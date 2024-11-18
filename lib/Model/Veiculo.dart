@@ -1,18 +1,18 @@
-import 'package:firebase_auth/firebase_auth.dart';
-
 class Veiculo {
-  final String nome;
-  final String marca;
-  final String ano;
-  final String placa;
-  final String usuarioId;
+  String id; 
+  String nome;
+  String marca;
+  String ano;
+  String placa;
+  String usuarioId;
 
   Veiculo({
+    required this.id,
     required this.nome,
     required this.marca,
     required this.ano,
     required this.placa,
-    required this.usuarioId, 
+    required this.usuarioId,
   });
 
   Map<String, dynamic> toMap() {
@@ -21,12 +21,13 @@ class Veiculo {
       'marca': marca,
       'ano': ano,
       'placa': placa,
-      'usuarioId': usuarioId, 
+      'usuarioId': usuarioId,
     };
   }
 
-  factory Veiculo.fromMap(Map<String, dynamic> map) {
+  factory Veiculo.fromMap(Map<String, dynamic> map, String id) {
     return Veiculo(
+      id: id,
       nome: map['nome'],
       marca: map['marca'],
       ano: map['ano'],
