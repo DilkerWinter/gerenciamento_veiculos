@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:gerenciamento_veiculos/Screen/Login-Cadastro/login.dart';
 
 class UsuarioConfigScreen extends StatefulWidget {
   const UsuarioConfigScreen({super.key});
@@ -12,10 +11,9 @@ class UsuarioConfigScreen extends StatefulWidget {
 class _UsuarioConfigScreenState extends State<UsuarioConfigScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  TextEditingController emailController = TextEditingController();
-  TextEditingController senhaController = TextEditingController();
-
+  TextEditingController usernameController = TextEditingController();
   bool isEditing = false;
+  TextEditingController passwordController = TextEditingController();
 
   @override
   void initState() {
@@ -26,8 +24,7 @@ class _UsuarioConfigScreenState extends State<UsuarioConfigScreen> {
   void _loadUserData() {
     User? user = _auth.currentUser;
     if (user != null) {
-      emailController.text = user.email ?? '';
-      senhaController.text = '';
+      usernameController.text = user.displayName ?? '';
     }
   }
 
@@ -37,55 +34,11 @@ class _UsuarioConfigScreenState extends State<UsuarioConfigScreen> {
     });
   }
 
-  Future<void> _deleteUser() async {
-    try {
-      User? user = _auth.currentUser;
-      if (user != null) {
-        bool shouldDelete = await _showDeleteConfirmation();
-        if (shouldDelete) {
-          await user.delete();
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('Usuário excluído com sucesso!'),
-          ));
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => LoginScreen()),
-          );
-        }
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Erro ao excluir usuário: $e'),
-      ));
-    }
-  }
-
-  Future<bool> _showDeleteConfirmation() async {
-    return await showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: Text('Excluir Conta'),
-            content: Text('Você tem certeza que deseja excluir sua conta?'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: Text('Cancelar'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: Text('Excluir'),
-              ),
-            ],
-          ),
-        ) ??
-        false;
-  }
-
   Future<void> _saveChanges() async {
     try {
       User? user = _auth.currentUser;
       if (user != null) {
-        await user.updateEmail(emailController.text);
+        await user.updateProfile(displayName: usernameController.text);
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Informações salvas com sucesso!'),
         ));
@@ -98,25 +51,56 @@ class _UsuarioConfigScreenState extends State<UsuarioConfigScreen> {
     }
   }
 
-  Future<void> _resetPassword() async {
+  Future<void> _sendPasswordResetEmail() async {
     try {
       User? user = _auth.currentUser;
       if (user != null) {
         await _auth.sendPasswordResetEmail(email: user.email!);
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Email de redefinição de senha enviado!'),
+          content: Text('E-mail de redefinição de senha enviado!'),
         ));
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Erro ao enviar email de redefinição de senha: $e'),
+        content: Text('Erro ao enviar o e-mail: $e'),
       ));
+    }
+  }
+
+  Future<void> _reauthenticateAndDeleteAccount() async {
+    User? user = _auth.currentUser;
+
+    if (user != null) {
+      String password = passwordController.text;
+
+      try {
+        AuthCredential credential = EmailAuthProvider.credential(
+          email: user.email!,
+          password: password,
+        );
+
+        await user.reauthenticateWithCredential(credential);
+
+        await user.delete();
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Conta excluída com sucesso!'),
+        ));
+      } on FirebaseAuthException catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Erro ao excluir conta: ${e.message}'),
+        ));
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Erro inesperado: $e'),
+        ));
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -139,20 +123,22 @@ class _UsuarioConfigScreenState extends State<UsuarioConfigScreen> {
                 ],
               ),
             ),
-            Text('Email:', style: TextStyle(fontSize: 18)),
+            Text('Nome de Usuário:', style: TextStyle(fontSize: 18)),
             isEditing
                 ? TextField(
-                    controller: emailController,
-                    decoration:
-                        InputDecoration(hintText: 'Digite o novo email'),
+                    controller: usernameController,
+                    decoration: InputDecoration(hintText: 'Digite o nome de usuário'),
                   )
                 : Text(
-                    emailController.text,
+                    usernameController.text.isEmpty ? 'Nenhum nome definido' : usernameController.text,
                     style: TextStyle(fontSize: 18),
                   ),
             SizedBox(height: 20),
-            Text('Senha:', style: TextStyle(fontSize: 18)),
-            Text('******', style: TextStyle(fontSize: 18)),
+            Text('E-mail:', style: TextStyle(fontSize: 18)),
+            Text(
+              _auth.currentUser?.email ?? 'E-mail não disponível',
+              style: TextStyle(fontSize: 18),
+            ),
             SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -168,23 +154,62 @@ class _UsuarioConfigScreenState extends State<UsuarioConfigScreen> {
                 ),
               ],
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 80),
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                ElevatedButton(
-                  onPressed: _deleteUser,
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                  child: Text('Excluir Conta',
-                      style: TextStyle(color: Colors.white)),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: _sendPasswordResetEmail,
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+                    child: Text(
+                      'Alterar Senha',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
                 ),
                 SizedBox(width: 10),
-                ElevatedButton(
-                  onPressed: _resetPassword,
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-                  child: Text(
-                    'Redefinir Senha',
-                    style: TextStyle(color: Colors.white),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Text('Confirmar Exclusão'),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text('Digite sua senha para confirmar a exclusão da conta:'),
+                                TextField(
+                                  controller: passwordController,
+                                  obscureText: true,
+                                  decoration: InputDecoration(hintText: 'Senha'),
+                                ),
+                              ],
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop(); 
+                                },
+                                child: Text('Cancelar'),
+                              ),
+                              TextButton(
+                                style: TextButton.styleFrom(backgroundColor: Colors.red),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                  _reauthenticateAndDeleteAccount(); 
+                                },
+                                child: Text('Confirmar', style: TextStyle(color: Colors.white),),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                    child: Text('Excluir Conta', style: TextStyle(color: Colors.white)),
                   ),
                 ),
               ],
