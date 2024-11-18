@@ -61,7 +61,7 @@ class VeiculoCard extends StatelessWidget {
             top: 0,
             right: 0,
             child: IconButton(
-              icon: Icon(Icons.edit, color: Colors.blue),
+              icon: Icon(Icons.edit, color: Colors.black),
               onPressed: onEdit, // Chama a função de edição quando pressionado
             ),
           ),
