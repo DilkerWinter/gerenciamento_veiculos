@@ -154,7 +154,7 @@ class _AbastecimentoDialogState extends State<AbastecimentoDialog> {
               );
             }
           },
-          child: Text('Salvar'),
+          child: Text('Salvar', style: TextStyle(color: Colors.white),),
           style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
         ),
       ],
