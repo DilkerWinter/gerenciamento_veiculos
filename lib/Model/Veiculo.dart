@@ -1,3 +1,5 @@
+import 'package:gerenciamento_veiculos/Model/Abastecimento.dart';
+
 class Veiculo {
   String id;
   String nome;
@@ -6,8 +8,8 @@ class Veiculo {
   String placa;
   String usuarioId;
   int kmAtual;
-  int? kmAnterior;
   double? mediaConsumo;
+  List<Abastecimento> abastecimentos;
 
   Veiculo({
     required this.id,
@@ -17,8 +19,8 @@ class Veiculo {
     required this.placa,
     required this.usuarioId,
     required this.kmAtual,
-    this.kmAnterior,
     this.mediaConsumo,
+    this.abastecimentos = const [], 
   });
 
   Map<String, dynamic> toMap() {
@@ -29,12 +31,19 @@ class Veiculo {
       'placa': placa,
       'usuarioId': usuarioId,
       'kmAtual': kmAtual,
-      'kmAnterior': kmAnterior,
       'mediaConsumo': mediaConsumo,
+      'abastecimentos': abastecimentos.map((ab) => ab.toMap()).toList(),
     };
   }
 
   factory Veiculo.fromMap(Map<String, dynamic> map, String id) {
+    var abastecimentosList = <Abastecimento>[];
+    if (map['abastecimentos'] != null) {
+      abastecimentosList = List<Abastecimento>.from(
+        map['abastecimentos'].map((ab) => Abastecimento.fromMap(ab, id, map['nome'])),
+      );
+    }
+
     return Veiculo(
       id: id,
       nome: map['nome'] ?? '',
@@ -43,9 +52,8 @@ class Veiculo {
       placa: map['placa'] ?? '',
       usuarioId: map['usuarioId'] ?? '',
       kmAtual: map['kmAtual'] ?? 0,
-      kmAnterior: map['kmAnterior'] != null ? map['kmAnterior'] as int : null,
-      mediaConsumo:
-          map['mediaConsumo'] != null ? map['mediaConsumo'] as double : null,
+      mediaConsumo: map['mediaConsumo'] != null ? map['mediaConsumo'] as double : null,
+      abastecimentos: abastecimentosList,
     );
   }
 }

@@ -100,4 +100,35 @@ class VeiculoController {
       return false;
     }
   }
+
+Future<bool> atualizarKmConsumoVeiculo(Veiculo veiculo, double mediaConsumoNovo) async {
+  User? usuario = FirebaseAuth.instance.currentUser;
+  int KmNovo = veiculo.kmAtual;
+  if (usuario != null) {
+    try {
+      if (veiculo.id.isEmpty) {
+        print("Erro: Veículo não encontrado.");
+        return false;
+      }
+
+      await FirebaseFirestore.instance
+          .collection('veiculos')
+          .doc(veiculo.id)
+          .update({
+        'mediaConsumo': mediaConsumoNovo,
+        'kmAtual': KmNovo,
+      });
+
+      print("Consumo do veículo atualizado com sucesso.");
+      return true;
+    } catch (error) {
+      print("Erro ao editar o consumo do veículo: $error");
+      return false;
+    }
+  } else {
+    print("Usuário não autenticado.");
+    return false;
+  }
+}
+
 }
