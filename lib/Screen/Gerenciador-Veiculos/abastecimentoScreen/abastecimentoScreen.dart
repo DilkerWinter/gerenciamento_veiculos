@@ -30,14 +30,21 @@ class _AbastecimentoScreenState extends State<AbastecimentoScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Histórico de Abastecimento'),
-      ),
       body: Center(
-        child: Padding(
-          padding: const EdgeInsets.only(top: 20),
           child: Column(
             children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 20),
+                child: Text(
+                  'Histórico de Abastecimento',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () async {
                   bool? result = await showDialog(
@@ -94,7 +101,6 @@ class _AbastecimentoScreenState extends State<AbastecimentoScreen> {
             ],
           ),
         ),
-      ),
     );
   }
 }
